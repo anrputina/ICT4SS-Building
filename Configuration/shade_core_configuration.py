@@ -36,8 +36,3 @@ configuration = {
 							],
 					'Season': 'None'	
 				}
-
-broker_configuration = {
-							'IP': 'localhost',
-							'port': 1883
-						}

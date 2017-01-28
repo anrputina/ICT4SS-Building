@@ -4,8 +4,8 @@ import json
 import paho.mqtt.client as mqtt
 from datetime import date, datetime
 from ShadingSystem import Shading_System_Controller
-from configuration import *
-
+from shade_core_configuration import configuration
+from broker_configuration import broker_configuration
 def main():
 
 	#BROKER CONNECTION#
@@ -34,25 +34,29 @@ def main():
 				building.rooms[i].add_window(window['name'],window['azimuth'], window['height'],
 				  window['length'], window['device_number'], window['device_width'])
 
-		# for room in building.rooms:
-		# 	room.show()
-		# 	for window in room.windows:
-		# 		window.show()
+		#PRINT SYSTEM STATUS
+		print ('-----SYSTEM STATUS-----')
+		for room in building.rooms:
+			room.show()
+			for window in room.windows:
+				window.show()
 
-		# building.sun.compute_elevation_azimuth()
-		# building.sun.print_elevation_azimuth()
+		building.sun.compute_elevation_azimuth()
+		building.sun.print_elevation_azimuth()
+		print ('-----END SYSTEM STATUS-----')
 
 	except:
 		sys.exit('System Core Initialization failed')
 
 
+	print ('-----RUNNING-----')
 	#LOOP
 	while(True):
 
 		building.check_status()
 
 		for room in building.rooms:
-			client.publish(room.room_name+'/Shade', json.dumps(room.create_message()))
+			client.publish(room.room_name+'/Shade', json.dumps(room.create_shade_message()))
 
 		time.sleep(5000)
 

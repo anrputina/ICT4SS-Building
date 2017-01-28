@@ -1,9 +1,20 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Jan 25 23:31:21 2017
+
+@author: anr.putina
+"""
+
 import sys
+import math
+sys.path.append('../Configuration/')
+sys.path.append('../Architecture/')
 import time
 import json
 import paho.mqtt.client as mqtt
-from client_configuration import *
-from configuration import broker_configuration
+from shade_client_configuration import configuration
+from broker_configuration import broker_configuration
 from Room import Room
 
 #Client INITIALITAZION#
@@ -27,7 +38,11 @@ except:
 
 def shade_callback(client, userdata, msg):
 	mes = json.loads(msg.payload)
-	room.read_message(mes)
+	response = room.parse_shade_message(mes)
+
+	if response != None:
+		client.publish(room.room_name+'/Shade', json.dumps(response))
+		print ('Publishing: ' + json.dumps(response))
 
 def on_connect(client, userdata, flags, rc):
 	print("Connected with result code "+str(rc))

@@ -5,8 +5,10 @@ Created on Wed Jan 25 23:31:21 2017
 
 @author: anr.putina
 """
-
+import sys
 import math
+sys.path.append('../Configuration/')
+sys.path.append('../Architecture/')
 from Room import Room 
 from Sun import Sun
 from datetime import date, datetime
