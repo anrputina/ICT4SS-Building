@@ -10,4 +10,4 @@ Shading System, LightingSystem and Air Quality System
 	- Each System uses different methods from the same classes
 
 - Configuration
-	-All the parameters for all the systems for both core and client
+	- All the parameters for all the systems for both core and client

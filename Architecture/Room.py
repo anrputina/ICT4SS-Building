@@ -7,6 +7,7 @@ Created on Wed Jan 25 23:31:21 2017
 """
 import sys
 import json
+import datetime
 sys.path.append('../LightingSystem')
 from Window import Window
 from Light_Sensor import Light_Sensor
@@ -23,6 +24,7 @@ class Room():
 		self.windows = []
 		self.lights = []
 		self.light_sensors = []
+		self.n_persons = 100
 
 	def add_window(self, name, window_azimuth, height, length, device_number, device_width):
 		new_window = Window(name, window_azimuth, height, length, device_number, device_width)
@@ -35,6 +37,32 @@ class Room():
 	def add_light_sensor(self, name, zone):
 		new_sensor = Light_Sensor(name, zone)
 		self.light_sensors.append(new_sensor)
+
+	def add_indoor_air_quality_parameters(self, qiaq,		\
+										  ceiling_emission,	\
+										  floor_emission,	\
+										  wall_emission,	\
+										  f_occupation,		\
+										  wall_surface):
+		self.qiaq = qiaq
+		self.ceiling_emission = ceiling_emission
+		self.floor_emission = floor_emission
+		self.wall_emission = wall_emission
+		self.f_occupation = f_occupation
+		self.wall_surface = wall_surface
+
+	def request_person_number(self, client, timestamp):
+
+		dict = {
+			'name': self.room_name,
+			'type': 'PIR-REQUEST',
+			'timestamp': timestamp
+		}
+
+		try:
+			client.publish(self.room_name+'/PIR', json.dumps(dict))
+		except:
+			'Error in publish request PIR'
 
 	def show(self):
 		print(str(self.room_name)+' is: '+str(self.length)+'x'+str(self.width)+'x'+str(self.height))
@@ -51,6 +79,28 @@ class Room():
 			client.publish(self.room_name+'/Light', json.dumps(dict))
 		except:
 			'Error in publish requests '
+
+	def run_requested_qiai(self, qiaq):
+		self.qiaq = qiaq
+
+	def set_new_qiaq(self, qiaq):
+		self.qiaq = qiaq
+
+	def parse_air_message(self, msg):
+
+		if(msg['type'] == 'COMMAND'):
+
+			self.set_new_qiaq(msg['new_qiaq'])
+
+			dict = {
+				'name': self.room_name,
+				'type': 'ACK'
+			}
+
+			return dict
+
+		else:
+			return None
 
 	def parse_light_message(self, msg):
 
