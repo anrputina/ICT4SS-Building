@@ -24,7 +24,7 @@ class Room():
 		self.windows = []
 		self.lights = []
 		self.light_sensors = []
-		self.n_persons = 100
+		self.n_persons = 0
 
 	def add_window(self, name, window_azimuth, height, length, device_number, device_width):
 		new_window = Window(name, window_azimuth, height, length, device_number, device_width)
@@ -44,7 +44,7 @@ class Room():
 										  wall_emission,	\
 										  f_occupation,		\
 										  wall_surface):
-		self.qiaq = qiaq
+		self.requested_qiaq = qiaq
 		self.ceiling_emission = ceiling_emission
 		self.floor_emission = floor_emission
 		self.wall_emission = wall_emission
@@ -64,15 +64,22 @@ class Room():
 		except:
 			'Error in publish request PIR'
 
+	def set_number_persons(self, number_persons):
+		self.n_persons = number_persons
+
+	def reset_qiaq(self):
+		self.qiaq = self.requested_qiaq
+
 	def show(self):
 		print(str(self.room_name)+' is: '+str(self.length)+'x'+str(self.width)+'x'+str(self.height))
 		print('Has '+str(len(self.windows))+' and '+str(self.area)+'m^2')
 
-	def request_lux_status(self, client):
+	def request_lux_status(self, client, timestamp):
 		
 		dict = {
 			'name': self.room_name,
-			'type': 'LUX-REQUEST'
+			'type': 'LUX-REQUEST',
+			'time': timestamp
 		}
 
 		try:
@@ -80,8 +87,8 @@ class Room():
 		except:
 			'Error in publish requests '
 
-	def run_requested_qiai(self, qiaq):
-		self.qiaq = qiaq
+	def run_requested_qiaq(self, qiaq):
+		self.requested_qiaq = qiaq
 
 	def set_new_qiaq(self, qiaq):
 		self.qiaq = qiaq
@@ -94,7 +101,8 @@ class Room():
 
 			dict = {
 				'name': self.room_name,
-				'type': 'ACK'
+				'type': 'ACK',
+				'new_qiaq': self.qiaq
 			}
 
 			return dict
@@ -107,11 +115,11 @@ class Room():
 		if (msg['type'] == 'LUX-REQUEST'):
 			dict = {
 				'name': self.room_name,
-				'type': 'RESPONSE',
+				'type': 'RESPONSE'
 			}
 
 			for sensor in self.light_sensors:
-				dict[sensor.zone] = sensor.get_lux()
+				dict[sensor.name] = sensor.get_lux(msg['time'])
 
 			return dict
 
@@ -123,8 +131,8 @@ class Room():
 			}
 
 			for light in self.lights:
-				light.set_intensity_actuator(msg[light.zone])
-				dict[light.zone] = light.get_intensity()
+				light.set_intensity_actuator(msg[light.name])
+				dict[light.name] = light.get_intensity()
 
 			return dict
 

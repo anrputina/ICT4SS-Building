@@ -16,6 +16,7 @@ import json
 import paho.mqtt.client as mqtt
 from light_client_configuration import configuration
 from broker_configuration import broker_configuration
+from light_sensor_configuration import configuration_light_sensor
 from Room import Room
 
 #Client INITIALITAZION#
@@ -31,10 +32,13 @@ try:
 			room.add_lights(light['name'], 'Zone_'+str(k+1),
 			light['bulbs_per_zone'], light['max_lumen'])
 
+	# for sensor in configuration['sensors']:
+	# 	for k in range(sensor['zones']):
+	# 		room.add_light_sensor(sensor['name']+'_'+str(k+1),
+	# 							 'Zone_'+str(k+1))
+
 	for sensor in configuration['sensors']:
-		for k in range(sensor['zones']):
-			room.add_light_sensor(sensor['name']+'_'+str(k+1),
-								 'Zone_'+str(k+1))
+		room.add_light_sensor(sensor['name'], configuration_light_sensor['trace'])
 
 	# for light in room.lights:
 	# 	light.show()
@@ -61,7 +65,7 @@ def main():
 
 	#BROKER CONNECTION#
 	try:
-		client = mqtt.Client()             	 
+		client = mqtt.Client('client-light')             	 
 		client.connect(broker_configuration['IP'], broker_configuration['port'], 60)
 		client.on_connect = on_connect
 

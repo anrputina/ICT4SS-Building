@@ -1,5 +1,5 @@
 configuration = {
-					'name': 'Noisy_Working_Area-LIGHT',
+					'name': 'Noisy_Working_Area',
 					'area': 2100,
 					'length': 50,
 					'width': 40,
@@ -7,7 +7,7 @@ configuration = {
 					'lights': [
 									{
 										'name': 'Ceiling-Lights',
-										'zones': 4,
+										'zones': 1,
 										'bulbs_per_zone': 40,
 										'max_lumen': 2700
 									}
@@ -15,7 +15,7 @@ configuration = {
 					'sensors': [
 									{
 										'name': 'Light-Sensor',
-										'zones': 4
+										'zones': 1
 									}
 								]
 				}

@@ -38,6 +38,7 @@ try:
 			configuration['Rooms'][i]['wall_emission'],
 			configuration['Rooms'][i]['f_occupation'],
 			configuration['Rooms'][i]['wall_surface'])
+		
 	
 except:
 	sys.exit('System Core Initialization failed')
@@ -52,37 +53,34 @@ def on_connect(client, userdata, flags, rc):
 
 def main():
 
-    # BROKER CONNECTION#
-    try:
-        client = mqtt.Client('clientcore')                
-        client.connect(broker_configuration['IP'], broker_configuration['port'], 60)
+	# BROKER CONNECTION#
+	try:
 
-        client.on_connect = on_connect
-        client.message_callback_add('+/PIR', pir_callback)
+		client = mqtt.Client('clientcore')                
+		client.connect(broker_configuration['IP'], broker_configuration['port'], 60)
+		client.on_connect = on_connect
+		client.message_callback_add('+/PIR', pir_callback)
+		client.loop_start()
 
-        client.loop_start()
-    except:
-        sys.exit('Broker Connection failed')
+	except:
+	    sys.exit('Broker Connection failed')
+
+	time.sleep(5)
 
     #LOOP
-    while(True):
+	while(True):
 
-    	for hour in range(0, 24, 1):
+		for hour in range(0, 24, 1):
 
 			timestamp = datetime.datetime(2017, 1, 1, hour, 0, 0)
 			# timestamp = datetime.date().now()
-			print timestamp
-			# now = timestamp.time()
+			print 'Simulating: ' + str(timestamp)
 
-			# if now >= time(building.timetable[0], building.timetable[1]) \
-			# 	and now <= time(building.timetable[2],building.timetable[3]):
-
-			if hour >= building.timetable[0] and hour <= building.timetable[2]:
+			#Check if the building is open or closed
+			if (hour >= building.timetable[0] and hour <= building.timetable[2]+1):
 				building.check_status(client, timestamp)
-				print ('sleep 10 seconds ')
-
 			else:
-				print 'NIGHT, no need for ACH'
+				print 'NIGHT!'
 
 			time.sleep(3)
 

@@ -24,7 +24,7 @@ try:
 				configuration['length'], configuration['width'],
 				configuration['height'])
 	
-	room.run_requested_qiai(configuration['requested_qiaq'])
+	room.run_requested_qiaq(configuration['requested_qiaq'])
 
 	# room.add_indoor_air_quality_parameters(\
 	# 	configuration['requested_qiaq'],

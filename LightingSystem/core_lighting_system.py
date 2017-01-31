@@ -21,7 +21,7 @@ from LightingSystem import Lighting_System_Controller
 try:
 
     building = Lighting_System_Controller(configuration['Building'],
-                                          configuration['requested_lux'],
+                                          configuration['requested_flux'],
                                           configuration['timetable'])
 
     for i in range(len(configuration['Rooms'])):
@@ -60,21 +60,21 @@ def main():
 
     #BROKER CONNECTION#
     try:
-        client = mqtt.Client()                
+        client = mqtt.Client('core-light')                
         client.connect(broker_configuration['IP'], broker_configuration['port'], 60)
-
         client.on_connect = on_connect
-
         client.message_callback_add('+/Light', light_callback)
         client.loop_start()
     except:
         sys.exit('Broker Connection failed')
 
+    time.sleep(3)
+
     #LOOP
     while(True):
 
-       building.check_status(client)
-
+       timestamp = 18
+       building.check_status(client, timestamp)
        time.sleep(500)
 
 if __name__ == "__main__":
