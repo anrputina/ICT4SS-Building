@@ -54,10 +54,10 @@ class Room():
 	def request_person_number(self, client, timestamp):
 
 		dict = {
-			'name': self.room_name,
-			'type': 'PIR-REQUEST',
-			'timestamp': timestamp
-		}
+				'name': self.room_name,
+				'type': 'PIR-REQUEST',
+				'timestamp': timestamp
+				}
 
 		try:
 			client.publish(self.room_name+'/PIR', json.dumps(dict))
@@ -115,7 +115,8 @@ class Room():
 		if (msg['type'] == 'LUX-REQUEST'):
 			dict = {
 				'name': self.room_name,
-				'type': 'RESPONSE'
+				'type': 'RESPONSE',
+				'time': msg['time']
 			}
 
 			for sensor in self.light_sensors:
@@ -128,11 +129,15 @@ class Room():
 			dict = {
 				'name': self.room_name,
 				'type': 'ACK',
+				'timestamp': msg['timestamp']
 			}
 
 			for light in self.lights:
 				light.set_intensity_actuator(msg[light.name])
 				dict[light.name] = light.get_intensity()
+				dict[light.name+'_tot'] = light.get_intensity() * light.bulbs_per_zone
+				dict[light.name+'_perc'] = round(float(light.get_intensity() * light.bulbs_per_zone)\
+										 / (float(light.bulbs_per_zone*light.max_lumen)),2)
 
 			return dict
 

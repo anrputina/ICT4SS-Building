@@ -10,7 +10,8 @@ import sys
 import time
 import json
 import paho.mqtt.client as mqtt
-from datetime import date, datetime
+# from datetime import date, datetime
+import datetime
 sys.path.append('../Configuration/')
 sys.path.append('../Architecture/')
 from light_core_configuration import configuration
@@ -52,6 +53,10 @@ def light_callback(client, userdata, msg):
   if response != None:
     client.publish(room.room_name+'/Light', json.dumps(response))
 
+def pir_callback(client, userdata, msg):
+  mes = json.loads(msg.payload)
+  response = building.parse_pir_message(mes)
+
 def on_connect(client, userdata, flags, rc):
   print("Connected with result code "+str(rc))
   client.subscribe("#")
@@ -64,6 +69,8 @@ def main():
         client.connect(broker_configuration['IP'], broker_configuration['port'], 60)
         client.on_connect = on_connect
         client.message_callback_add('+/Light', light_callback)
+        client.message_callback_add('+/PIR', pir_callback)
+
         client.loop_start()
     except:
         sys.exit('Broker Connection failed')
@@ -73,9 +80,18 @@ def main():
     #LOOP
     while(True):
 
-       timestamp = 18
-       building.check_status(client, timestamp)
-       time.sleep(500)
+      for hour in range(0, 24, 1):
+
+         # timestamp = 18
+         timestamp = datetime.datetime(2017, 1, 1, hour, 0, 0)
+         print 'Simulating: ' + str(timestamp)
+
+         if (timestamp.hour >= building.timetable[0] and timestamp.hour <= building.timetable[2]):
+           building.check_status(client, timestamp)
+         else :
+            print 'NIGHT!'
+
+         time.sleep(3)
 
 if __name__ == "__main__":
     main()
