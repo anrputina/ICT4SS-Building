@@ -14,7 +14,7 @@ configuration = {
 									'length': 52,
 									'width': 40,
 									'height': 4.4,
-									'requested_qiaq': 40,
+									'requested_qiaq': 45,
 									'ceiling_emission': 48,
 									'floor_emission': 6,
 									'wall_emission': 48,

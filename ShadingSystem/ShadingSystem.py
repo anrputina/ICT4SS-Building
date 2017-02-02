@@ -14,6 +14,8 @@ from Sun import Sun
 from datetime import date, datetime
 from season_configuration import *
 
+import dweepy
+
 def compute_w_projection(device_length, window_azimuth, solar_azimuth, angle):
 
 	if (window_azimuth > solar_azimuth):
@@ -35,6 +37,7 @@ class Shading_System_Controller():
 		self.sun = Sun(latitude, longitude)
 		self.season = season
 		self.rooms = []
+		self.dweet = 'ICTBUILDINGPUTINASHADE'
 
 	def set_season(self, season):
 		self.season = season
@@ -64,7 +67,7 @@ class Shading_System_Controller():
 		# self.set_season(get_season(date.today()))
 		self.set_season(get_season(timestamp.date()))
 		self.sun.compute_elevation_azimuth(timestamp)
-		#self.sun.print_elevation_azimuth()
+		self.sun.print_elevation_azimuth()
 
 		for i in range(len(self.rooms)):
 			for window in self.rooms[i].windows:
@@ -160,3 +163,10 @@ class Shading_System_Controller():
 									 abs(angle)))
 
 			return angles.index(min(angles))*(-5)
+
+	def parse_shade_message(self, msg):
+
+		if (msg['type'] == 'ACK'):
+			print (dweepy.dweet_for(self.dweet, msg))
+		else:
+			pass

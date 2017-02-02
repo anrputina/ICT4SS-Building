@@ -159,8 +159,6 @@ class Room():
 				window.set_motor_angle(msg[window.name])
 				dict[window.name] = msg[window.name]
 
-			print (dweepy.dweet_for('ICTBUILDINGPUTINASHADE',dict))
-
 			return dict
 		
 		else:

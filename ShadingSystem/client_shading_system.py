@@ -17,9 +17,6 @@ from shade_client_configuration import configuration
 from broker_configuration import broker_configuration
 from Room import Room
 
-import dweepy
-
-
 #Client INITIALITAZION#
 try:
 
@@ -55,7 +52,7 @@ def main():
 
 	#BROKER CONNECTION#
 	try:
-		client = mqtt.Client()             	 
+		client = mqtt.Client('client_shade')             	 
 		client.connect(broker_configuration['IP'], broker_configuration['port'], 60)
 		client.on_connect = on_connect
 
