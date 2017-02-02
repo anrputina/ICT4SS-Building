@@ -17,6 +17,9 @@ from shade_client_configuration import configuration
 from broker_configuration import broker_configuration
 from Room import Room
 
+import dweepy
+
+
 #Client INITIALITAZION#
 try:
 

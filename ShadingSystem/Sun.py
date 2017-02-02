@@ -24,9 +24,9 @@ class Sun():
 		self.latitude = latitude
 		self.longitude = longitude
 
-	def compute_elevation_azimuth(self):
+	def compute_elevation_azimuth(self, now):
 		#now = datetime.datetime.now()		
-		now = datetime.datetime(2016, 6, 21, 14, 10, 0)
+		# now = datetime.datetime(2016, 6, 21, 14, 10, 0)
 		self.elevation = get_altitude(self.latitude, self.longitude, now)
 		self.azimuth = set_north_hemisphere(get_azimuth(self.latitude, self.longitude, now))
 

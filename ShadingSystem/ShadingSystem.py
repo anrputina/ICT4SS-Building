@@ -59,12 +59,11 @@ class Shading_System_Controller():
 		else:
 			print('No need to Shade window with '+str(window.window_azimuth)+' degree in azimuth')
 
-	def check_status(self):
+	def check_status(self, timestamp):
 
-		self.set_season(get_season(date.today()))
-		self.set_season(get_season(date(2016, 6, 21)))
-
-		self.sun.compute_elevation_azimuth()
+		# self.set_season(get_season(date.today()))
+		self.set_season(get_season(timestamp.date()))
+		self.sun.compute_elevation_azimuth(timestamp)
 		#self.sun.print_elevation_azimuth()
 
 		for i in range(len(self.rooms)):
@@ -94,7 +93,7 @@ class Shading_System_Controller():
 			if self.sun.elevation < 0:
 				window.set_angle(0)
 			else:
-				angle = self.compute_winter_device_orientation(window)
+				angle = int(self.compute_winter_device_orientation(window))
 				print ('set angle in winter to: ' + str(angle))
 				window.set_angle(angle)
 
@@ -103,12 +102,13 @@ class Shading_System_Controller():
 
 	def compute_winter_device_orientation(self, window):
 
-		if (-90 < self.sun.azimuth - window.window_azimuth < 90):
-			angle = self.sun.azimuth - window.window_azimuth
-		else:
-			angle = 0
+		# if (-90 < self.sun.azimuth - window.window_azimuth < 90):
+		# 	angle = self.sun.azimuth - window.window_azimuth
+		# else:
+		# 	angle = 0
 		
-		return angle
+		# return angle
+		return self.sun.azimuth - window.window_azimuth
 
 	def compute_summer_device_orientation(self, window):
 
@@ -119,25 +119,44 @@ class Shading_System_Controller():
 		angle = window.angle
 
 		if (window.window_azimuth > self.sun.azimuth):
-			while ((w < window.device_width) and angle < 79):
+			# while ((w < window.device_width) and angle < 79):
 				
-				angle += 5 
-				w = compute_w_projection(window.device_width,	\
-										 window.window_azimuth,	\
-										 self.sun.azimuth,		\
-										 angle)
+			# 	# angle += 5 
 
-				print ('increasing angle to: '\
-						+ str(angle) + 'and obtaining w: ' + str(w))
+			# 	# w = compute_w_projection(window.device_width,	\
+			# 	# 						 window.window_azimuth,	\
+			# 	# 						 self.sun.azimuth,		\
+			# 	# 						 angle)
+
+			# 	# print ('increasing angle to: '\
+			# 	# 		+ str(angle) + 'and obtaining w: ' + str(w))
+			angles=[]
+			for angle in range (0, 80, 5):
+				angles.append(compute_w_projection(window.device_width,	\
+									 window.window_azimuth,				\
+									 self.sun.azimuth,					\
+									 angle))
+
+			return angles.index(max(angles))*5
+
+
 
 		else:
-			while ( w < window.device_width and angle > -79):
-				angle -= 5
-				w = compute_w_projection(window.device_width,	\
-										 window.window_azimuth,	\
-										 self.sun.azimuth, 		\
-										 abs(angle))
-				print ('decreasing angle to: ' \
-						+ str(angle) + 'and obtaining w: ' + str(w))
+			# angle = 0
+			# while ( w < window.device_width and angle > -79):
+				# angle -= 5
+				# w = compute_w_projection(window.device_width,	\
+				# 						 window.window_azimuth,	\
+				# 						 self.sun.azimuth, 		\
+				# 						 abs(angle))
+				# print ('decreasing angle to: ' \
+				# 		+ str(angle) + 'and obtaining w: ' + str(w))
 
-		return angle
+			angles = []
+			for angle in range (-80, 0, 5):
+				angles.append(compute_w_projection(window.device_width,	\
+									 window.window_azimuth,				\
+									 self.sun.azimuth,					\
+									 abs(angle)))
+
+			return angles.index(min(angles))*(-5)

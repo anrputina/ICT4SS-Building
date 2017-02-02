@@ -1,8 +1,8 @@
 import sys
 import time
 import json
+import datetime
 import paho.mqtt.client as mqtt
-from datetime import date, datetime
 from ShadingSystem import Shading_System_Controller
 from shade_core_configuration import configuration
 from broker_configuration import broker_configuration
@@ -10,7 +10,7 @@ def main():
 
 	#BROKER CONNECTION#
 	try:
-		client = mqtt.Client()             	  
+		client = mqtt.Client('core-shade')             	  
 		client.connect(broker_configuration['IP'], broker_configuration['port'], 60)
 
 	except:
@@ -41,8 +41,6 @@ def main():
 			for window in room.windows:
 				window.show()
 
-		building.sun.compute_elevation_azimuth()
-		building.sun.print_elevation_azimuth()
 		print ('-----END SYSTEM STATUS-----')
 
 	except:
@@ -53,12 +51,18 @@ def main():
 	#LOOP
 	while(True):
 
-		building.check_status()
+		for hour in range(0, 24, 1):
 
-		for room in building.rooms:
-			client.publish(room.room_name+'/Shade', json.dumps(room.create_shade_message()))
+			timestamp = datetime.datetime(2016, 6, 21, hour, 0, 0)
+			# timestamp = datetime.date().now()
+			print ('Simulating: ' + str(timestamp))
 
-		time.sleep(5000)
+			building.check_status(timestamp)
+
+			for room in building.rooms:
+				client.publish(room.room_name+'/Shade', json.dumps(room.create_shade_message(str(timestamp))))
+
+			time.sleep(3)
 
 if __name__ == "__main__":
 	main()

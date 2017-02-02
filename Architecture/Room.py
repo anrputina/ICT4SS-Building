@@ -12,6 +12,7 @@ sys.path.append('../LightingSystem')
 from Window import Window
 from Light_Sensor import Light_Sensor
 from artificial_light import Artificial_light
+import dweepy
 
 class Room():
 
@@ -150,23 +151,27 @@ class Room():
 
 			dict = {
 				'name': self.room_name,
-				'type': 'ACK'
+				'type': 'ACK',
+				'timestamp': msg['timestamp']
 			}
 
 			for window in self.windows:
 				window.set_motor_angle(msg[window.name])
 				dict[window.name] = msg[window.name]
 
+			print (dweepy.dweet_for('ICTBUILDINGPUTINASHADE',dict))
+
 			return dict
 		
 		else:
 			return None
 
-	def create_shade_message(self):
+	def create_shade_message(self, timestamp):
 
 		dict = {
 			'name': self.room_name,
-			'type': 'COMMAND'
+			'type': 'COMMAND',
+			'timestamp': timestamp
 		}
 
 		for window in self.windows:
