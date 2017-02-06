@@ -24,6 +24,7 @@ class Indoor_Air_Quality_System():
 		self.timetable = timetable
 		self.voc_class_A = voc_class_A
 		self.rooms = []
+		self.dweep = 'ICTBUILDINGPUTINAPIR'
 
 	def add_room(self, room_name, area, length, width, height):
 		new_room = Room(room_name, area, length, width, height)
@@ -48,6 +49,10 @@ class Indoor_Air_Quality_System():
 			for room in self.rooms:
 				if room.room_name == msg['name']:
 					room.set_number_persons(msg['persons'])
+
+	def parse_air_message(self, msg):
+		if (msg['type'] == 'ACK'):
+			print (dweepy.dweet_for(self.dweep , msg))
 
 	def compute_voc_value(self, room):
 
@@ -85,8 +90,24 @@ class Indoor_Air_Quality_System():
 					'n_persons': room.n_persons
 				}
 
-				print (dweepy.dweet_for('ICTBUILDINGPUTINAPIR', dict))
 				client.publish(room.room_name+'/Air', json.dumps(dict))
 
 		except:
 			print('')
+
+	def down_all(self, client, timestamp):
+		try:
+
+			for room in self.rooms:
+
+				dict = {
+					'name': room.room_name,
+					'type': 'COMMAND',
+					'new_qiaq': 0,
+					'total_flow': 0,
+					'time': str(timestamp),
+					'n_persons': room.n_persons
+				}
+				client.publish(room.room_name+'/Air', json.dumps(dict))
+		except:
+			print ('Error in setting 0, night!')

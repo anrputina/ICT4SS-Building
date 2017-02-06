@@ -47,6 +47,10 @@ def pir_callback(client, userdata, msg):
 	mes = json.loads(msg.payload)
 	response = building.parse_pir_message(mes)
 
+def air_callback(client, userdata, msg):
+  mes = json.loads(msg.payload)
+  response = building.parse_air_message(mes)
+
 def on_connect(client, userdata, flags, rc):
 	print("Connected with result code "+str(rc))
 	client.subscribe("#")
@@ -60,6 +64,8 @@ def main():
 		client.connect(broker_configuration['IP'], broker_configuration['port'], 60)
 		client.on_connect = on_connect
 		client.message_callback_add('+/PIR', pir_callback)
+		client.message_callback_add('+/Air', air_callback)
+
 		client.loop_start()
 
 	except:
@@ -80,6 +86,7 @@ def main():
 			if (hour >= building.timetable[0] and hour <= building.timetable[2]+1):
 				building.check_status(client, timestamp)
 			else:
+				building.down_all(client, timestamp)
 				print 'NIGHT!'
 
 			time.sleep(3)

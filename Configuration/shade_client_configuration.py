@@ -1,9 +1,9 @@
 configuration = {
 					'name': 'Noisy_Working_Area',
-					'area': 2100,
-					'length': 50,
+					'area': 2080,
+					'length': 52,
 					'width': 40,
-					'height': 4,
+					'height': 4.4,
 					'windows': [
 									{
 										'name': 'South-East',

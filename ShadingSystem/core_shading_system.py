@@ -61,6 +61,7 @@ def main():
 		sys.exit('Broker Connection failed')
 
 	print ('-----RUNNING-----')
+	
 	#LOOP
 	while(True):
 

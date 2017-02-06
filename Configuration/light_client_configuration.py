@@ -8,8 +8,8 @@ configuration = {
 									{
 										'name': 'Ceiling-Lights',
 										'zones': 1,
-										'bulbs_per_zone': 160,
-										'max_lumen': 8100
+										'bulbs_per_zone': 54,
+										'max_lumen': 21000
 									}
 								],
 					'sensors': [

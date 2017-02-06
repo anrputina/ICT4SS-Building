@@ -77,7 +77,7 @@ class Shading_System_Controller():
 				else:
 					window.set_angle(0)
 
-				self.compute_statistics(window)
+				# self.compute_statistics(window)
 				#print (window.window_azimuth)
 
 	def compute_device_orientation(self, window):

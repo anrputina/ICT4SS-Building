@@ -24,16 +24,11 @@ class Lighting_System_Controller():
 		self.requested_lux = requested_lux
 		self.timetable = timetable
 		self.rooms = []
+		self.dweep = 'ICTBUILDINGPUTINALIGHT'
 
 	def add_room(self, room_name, area, length, width, height):
 		new_room = Room(room_name, area, length, width, height)
 		self.rooms.append(new_room)
-
-	def parse_pir_message(self, msg):
-		if (msg['type'] == 'PIR-RESPONSE'):
-			for room in self.rooms:
-				if room.room_name == msg['name']:
-					room.set_number_persons(msg['persons'])
 
 	def check_status(self, client, timestamp):
 
@@ -58,6 +53,25 @@ class Lighting_System_Controller():
 		for room in self.rooms:
 			room.request_lux_status(client, timestamp.hour)
 
+	def down_all(self, client, timestamp):
+		for room in self.rooms:
+
+			dict = {
+				'name': room.room_name,
+				'type': 'COMMAND',
+				'timestamp': str(timestamp)
+			}
+
+			for light in room.lights:
+				light.set_intensity(0)
+				dict[light.name] = 0
+
+			try:
+				client.publish(room.room_name+'/Light', json.dumps(dict))
+			except:
+				print 'Impossible to publish Light message'
+
+
 	def check_light_requirement(self, lux_value, room):
 
 		lux = lux_value * 0.0254
@@ -73,6 +87,12 @@ class Lighting_System_Controller():
 				final_per_bulb = flux_per_zone / light.bulbs_per_zone
 
 			return (int(final_per_bulb))
+
+	def parse_pir_message(self, msg):
+		if (msg['type'] == 'PIR-RESPONSE'):
+			for room in self.rooms:
+				if room.room_name == msg['name']:
+					room.set_number_persons(msg['persons'])
 
 	def parse_light_message(self, msg, client):
 
@@ -94,6 +114,7 @@ class Lighting_System_Controller():
 
 					else:
 						for light in room.lights:
+							light.set_intensity(0)
 							dict[light.name] = 0
 
 					client.publish(room.room_name+'/Light', json.dumps(dict))
@@ -103,8 +124,7 @@ class Lighting_System_Controller():
 					'Don t have this room in process'
 
 		elif (msg['type'] == 'ACK'):
-			print (dweepy.dweet_for('ICTBUILDINGPUTINALIGHT', msg))
-
+			print (dweepy.dweet_for(self.dweep, msg))
 
 		else:
 			pass

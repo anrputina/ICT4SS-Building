@@ -18,8 +18,8 @@ configuration = {
 													{
 														'name': 'Ceiling-Lights',
 														'zones': 1,
-														'bulbs_per_zone': 160,
-														'max_lumen': 8100
+														'bulbs_per_zone': 54,
+														'max_lumen': 21000
 													}
 												],
 									'sensors': [
@@ -30,6 +30,6 @@ configuration = {
 												]
 								}
 							],
-					'requested_flux': 1100000,
-					'timetable': [6, 00, 22, 00]
+					'requested_flux': 1116000,
+					'timetable': [9, 00, 18, 00]
 				}

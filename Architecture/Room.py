@@ -52,6 +52,7 @@ class Room():
 		self.f_occupation = f_occupation
 		self.wall_surface = wall_surface
 
+	### PERSON NUMBER ###
 	def request_person_number(self, client, timestamp):
 
 		dict = {
@@ -68,13 +69,7 @@ class Room():
 	def set_number_persons(self, number_persons):
 		self.n_persons = number_persons
 
-	def reset_qiaq(self):
-		self.qiaq = self.requested_qiaq
-
-	def show(self):
-		print(str(self.room_name)+' is: '+str(self.length)+'x'+str(self.width)+'x'+str(self.height))
-		print('Has '+str(len(self.windows))+' and '+str(self.area)+'m^2')
-
+	### LUX AND LIGHTING ###
 	def request_lux_status(self, client, timestamp):
 		
 		dict = {
@@ -86,30 +81,7 @@ class Room():
 		try:
 			client.publish(self.room_name+'/Light', json.dumps(dict))
 		except:
-			'Error in publish requests '
-
-	def run_requested_qiaq(self, qiaq):
-		self.requested_qiaq = qiaq
-
-	def set_new_qiaq(self, qiaq):
-		self.qiaq = qiaq
-
-	def parse_air_message(self, msg):
-
-		if(msg['type'] == 'COMMAND'):
-
-			self.set_new_qiaq(msg['new_qiaq'])
-
-			dict = {
-				'name': self.room_name,
-				'type': 'ACK',
-				'new_qiaq': self.qiaq
-			}
-
-			return dict
-
-		else:
-			return None
+			'Error in publish requests'
 
 	def parse_light_message(self, msg):
 
@@ -145,6 +117,39 @@ class Room():
 		else:
 			return None
 
+	### QIAQ, ACH AND AIR QUALITY ###
+	def reset_qiaq(self):
+		self.qiaq = self.requested_qiaq
+
+	def run_requested_qiaq(self, qiaq):
+		self.requested_qiaq = qiaq
+
+	def set_new_qiaq(self, qiaq):
+		self.qiaq = qiaq
+
+	def parse_air_message(self, msg):
+
+		if(msg['type'] == 'COMMAND'):
+
+			self.set_new_qiaq(msg['new_qiaq'])
+			self.total_flow = msg['total_flow']
+
+			dict = {
+				'name': self.room_name,
+				'type': 'ACK',
+				'new_qiaq': self.qiaq,
+				'total_flow': msg['total_flow'],
+				'time': msg['time'],
+				'n_persons': msg['n_persons']
+
+			}
+
+			return dict
+
+		else:
+			return None
+
+	### SHADING SYSTEM ###
 	def parse_shade_message(self, msg):
 
 		if (msg['type'] == 'COMMAND'):
@@ -176,3 +181,8 @@ class Room():
 			dict[window.name] = window.angle
 
 		return dict
+
+	### - ###
+	def show(self):
+		print(str(self.room_name)+' is: '+str(self.length)+'x'+str(self.width)+'x'+str(self.height))
+		print('Has '+str(len(self.windows))+' and '+str(self.area)+'m^2')

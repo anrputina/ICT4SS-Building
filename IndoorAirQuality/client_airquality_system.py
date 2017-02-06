@@ -39,7 +39,7 @@ def air_quality_callback(client, userdata, msg):
 	response = room.parse_air_message(mes)
 
 	if response != None:
-		client.publish(room.room_name+'/Air_RESPONSE', json.dumps(response))
+		client.publish(room.room_name+'/Air', json.dumps(response))
 		print ('Publishing: ' + json.dumps(response))
 
 def on_connect(client, userdata, flags, rc):

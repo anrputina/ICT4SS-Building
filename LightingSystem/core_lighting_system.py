@@ -89,6 +89,7 @@ def main():
          if (timestamp.hour >= building.timetable[0] and timestamp.hour <= building.timetable[2]):
            building.check_status(client, timestamp)
          else :
+            building.down_all(client, timestamp)
             print 'NIGHT!'
 
          time.sleep(3)
